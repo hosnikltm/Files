@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Menu</string>
+    <string name="title">Title</string>
+    <string name="sub_title">Sub Title</string>
+    <string name="miscellaneous">Miscellaneous</string>
+    <string name="pink_color">Pink Color</string>
+</resources>
