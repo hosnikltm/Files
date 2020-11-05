@@ -1,7 +1,9 @@
 <resources>
-    <string name="app_name">Menu</string>
+    <string name="app_name">Notes</string>
     <string name="title">Title</string>
     <string name="sub_title">Sub Title</string>
-    <string name="miscellaneous">Miscellaneous</string>
+    <string name="miscellaneous">Colors</string>
     <string name="pink_color">Pink Color</string>
+    <string name="update">update</string>
+    <string name="cancel">cancel</string>
 </resources>

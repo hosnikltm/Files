@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Utilities {
     /**
@@ -25,6 +26,7 @@ public class Utilities {
      */
     public static boolean saveNote(Context context, Note note) {
 
+        /* public static final String FILE_EXTENSION = ".bin"; */
         String fileName = note.getDateTime() + FILE_EXTENSION;
 
         FileOutputStream fos;
@@ -37,7 +39,6 @@ public class Utilities {
             oos.close();
         } catch (IOException e) {
             e.printStackTrace();
-            //tell user the note was saved!
             return false;
         }
 
@@ -56,7 +57,7 @@ public class Utilities {
         ArrayList<String> noteFiles = new ArrayList<>();
 
         //add .bin files to the noteFiles list
-        for(String file : filesDir.list()) {
+        for(String file : Objects.requireNonNull(filesDir.list())) {
             if(file.endsWith(FILE_EXTENSION)) {
                 noteFiles.add(file);
             }
@@ -130,4 +131,3 @@ public class Utilities {
         return false;
     }
 }
-

@@ -3,11 +3,13 @@ package com.example.hosninoteapp;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,7 +27,6 @@ public class CreateNote extends AppCompatActivity {
 
 
     private EditText mEditTextTitle,mEditTextSubTitle;
-    private ImageView mImageViewSave,mImageViewBack;
     private View viewSubTitleIndicator;
 
     private String selectedNoteColor;
@@ -54,18 +55,19 @@ public class CreateNote extends AppCompatActivity {
         }
 
 
-        mImageViewBack = findViewById(R.id.image_back);
-        mImageViewBack.setOnClickListener(new View.OnClickListener() {
+        ImageView mImageViewBack = findViewById(R.id.image_back);
+        mImageViewBack.setOnClickListener(v -> actionCancel());
+
+        ImageView mImageViewSave = findViewById(R.id.image_done);
+        mImageViewSave.setOnClickListener(v -> validateAndSaveNote());
+
+        ImageView mImageViewCheckBox = findViewById(R.id.checkBoxNote);
+        mImageViewCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        mImageViewSave = findViewById(R.id.image_done);
-        mImageViewSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                validateAndSaveNote();
+                Intent intent = new Intent(CreateNote.this,CreateCheckBoxNote.class);
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -74,17 +76,45 @@ public class CreateNote extends AppCompatActivity {
         initMiscellaneous();
         setSubTitleIndicatorColor();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //load menu based on the state we are in (new, view/update/delete)
+        if(mIsViewingOrUpdating) { //user is viewing or updating a note
+            getMenuInflater().inflate(R.menu.menu_note_view, menu);
+        }
+        return true;
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+
+            case R.id.action_update: //or update :P
+                validateAndSaveNote();
+                break;
+
+            case R.id.action_delete:
+                actionDelete();
+                break;
+
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void initMiscellaneous(){
         final LinearLayout linearLayout = findViewById(R.id.layoutMiscellaneous);
         final BottomSheetBehavior<LinearLayout> bottomSheetBehavior = BottomSheetBehavior.from(linearLayout);
-        linearLayout.findViewById(R.id.textMiscellaneous).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED){
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                }else {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
+        linearLayout.findViewById(R.id.textMiscellaneous).setOnClickListener(v -> {
+            if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED){
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
         final ImageView imageViewColor1 = findViewById(R.id.imageColor1);
@@ -101,115 +131,98 @@ public class CreateNote extends AppCompatActivity {
         final ImageView imageViewColor12 = findViewById(R.id.imageColor12);
         final ImageView imageViewColor13 = findViewById(R.id.imageColor13);
         final ImageView imageViewColor14 = findViewById(R.id.imageColor14);
-        linearLayout.findViewById(R.id.viewColor1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#333333";
-                imageViewColor1.setImageResource(R.drawable.ic_done);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor1).setOnClickListener(v -> {
+            selectedNoteColor = "#333333";
+            imageViewColor1.setImageResource(R.drawable.ic_done);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#FDBE3B";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(R.drawable.ic_done);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor2).setOnClickListener(v -> {
+            selectedNoteColor = "#FDBE3B";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(R.drawable.ic_done);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor3).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#FF4842";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(R.drawable.ic_done);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor3).setOnClickListener(v -> {
+            selectedNoteColor = "#FF4842";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(R.drawable.ic_done);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor4).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#3A52FC";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(R.drawable.ic_done);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor4).setOnClickListener(v -> {
+            selectedNoteColor = "#3A52FC";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(R.drawable.ic_done);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor5).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#000000";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(R.drawable.ic_done);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor5).setOnClickListener(v -> {
+            selectedNoteColor = "#000000";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(R.drawable.ic_done);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor6).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#D1C4E9";
+        linearLayout.findViewById(R.id.viewColor6).setOnClickListener(v ->{
+                selectedNoteColor = "#a0ef9a";
                 imageViewColor1.setImageResource(0);
                 imageViewColor2.setImageResource(0);
                 imageViewColor3.setImageResource(0);
@@ -225,175 +238,151 @@ public class CreateNote extends AppCompatActivity {
                 imageViewColor13.setImageResource(0);
                 imageViewColor14.setImageResource(0);
                 setSubTitleIndicatorColor();
-            }
+
         });
-        linearLayout.findViewById(R.id.viewColor7).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#e91e63";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(R.drawable.ic_done);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor7).setOnClickListener(v -> {
+            selectedNoteColor = "#e91e63";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(R.drawable.ic_done);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor8).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#9c27b0";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(R.drawable.ic_done);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor8).setOnClickListener(v -> {
+            selectedNoteColor = "#9c27b0";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(R.drawable.ic_done);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor9).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#ea80fc";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(R.drawable.ic_done);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor9).setOnClickListener(v -> {
+            selectedNoteColor = "#ea80fc";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(R.drawable.ic_done);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor10).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#465191";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(R.drawable.ic_done);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor10).setOnClickListener(v -> {
+            selectedNoteColor = "#465191";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(R.drawable.ic_done);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor11).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#1976d2";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(R.drawable.ic_done);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor11).setOnClickListener(v -> {
+            selectedNoteColor = "#1976d2";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(R.drawable.ic_done);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor12).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#18ffff";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(R.drawable.ic_done);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor12).setOnClickListener(v -> {
+            selectedNoteColor = "#18ffff";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(R.drawable.ic_done);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor13).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#4caf50";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(R.drawable.ic_done);
-                imageViewColor14.setImageResource(0);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor13).setOnClickListener(v -> {
+            selectedNoteColor = "#4caf50";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(R.drawable.ic_done);
+            imageViewColor14.setImageResource(0);
+            setSubTitleIndicatorColor();
         });
-        linearLayout.findViewById(R.id.viewColor14).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedNoteColor = "#607d8b";
-                imageViewColor1.setImageResource(0);
-                imageViewColor2.setImageResource(0);
-                imageViewColor3.setImageResource(0);
-                imageViewColor4.setImageResource(0);
-                imageViewColor5.setImageResource(0);
-                imageViewColor6.setImageResource(0);
-                imageViewColor7.setImageResource(0);
-                imageViewColor8.setImageResource(0);
-                imageViewColor9.setImageResource(0);
-                imageViewColor10.setImageResource(0);
-                imageViewColor11.setImageResource(0);
-                imageViewColor12.setImageResource(0);
-                imageViewColor13.setImageResource(0);
-                imageViewColor14.setImageResource(R.drawable.ic_done);
-                setSubTitleIndicatorColor();
-            }
+        linearLayout.findViewById(R.id.viewColor14).setOnClickListener(v -> {
+            selectedNoteColor = "#607d8b";
+            imageViewColor1.setImageResource(0);
+            imageViewColor2.setImageResource(0);
+            imageViewColor3.setImageResource(0);
+            imageViewColor4.setImageResource(0);
+            imageViewColor5.setImageResource(0);
+            imageViewColor6.setImageResource(0);
+            imageViewColor7.setImageResource(0);
+            imageViewColor8.setImageResource(0);
+            imageViewColor9.setImageResource(0);
+            imageViewColor10.setImageResource(0);
+            imageViewColor11.setImageResource(0);
+            imageViewColor12.setImageResource(0);
+            imageViewColor13.setImageResource(0);
+            imageViewColor14.setImageResource(R.drawable.ic_done);
+            setSubTitleIndicatorColor();
         });
 
 
@@ -492,11 +481,7 @@ public class CreateNote extends AppCompatActivity {
             Toast.makeText(this, "can not save the note. make sure you have enough space " +
                     "on your device", Toast.LENGTH_SHORT).show();
         }
-        Intent intent = new Intent();
-        intent.putExtra("file" , mFileName);
-        startActivity(intent);
 
         finish(); //exit the activity, should return us to MainActivity
     }
 }
-

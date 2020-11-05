@@ -8,13 +8,18 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class Note implements Serializable {
-    private  String title, subTitle, color;
+    private  String title, subTitle, color,checkBoxText;
     private long mDateTime;
 
     public Note() {
     }
 
-    public Note(String title, String subTitle,String color) {
+    public Note(long mDateTime ,String checkBoxText) {
+        this.checkBoxText = checkBoxText;
+        this.mDateTime = mDateTime;
+    }
+
+    public Note(String title, String subTitle, String color) {
         this.title = title;
         this.subTitle = subTitle;
         this.color = color;
@@ -63,5 +68,11 @@ public class Note implements Serializable {
         return formatter.format(new Date(mDateTime));
     }
 
+    public String getCheckBoxText() {
+        return checkBoxText;
+    }
 
+    public void setCheckBoxText(String checkBoxText) {
+        this.checkBoxText = checkBoxText;
+    }
 }
